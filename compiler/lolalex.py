@@ -67,19 +67,3 @@ class LolaLexer(Lexer):
 	def error(self, value):
 		print('Line %d: Bad character %r' % (self.lineno, value[0]))
 		self.index += 1
-
-# Main - Temporal -
-if __name__ == '__main__':
-    data = '''
-{
-	>=
-	=
-	<=
-	:= \n
-	(* hola *)
-	BIT
-}
-'''
-    lexer = LolaLexer()
-    for tok in lexer.tokenize(data):
-        print(tok)
