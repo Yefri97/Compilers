@@ -20,14 +20,13 @@ class LolaLexer(Lexer):
 
 	# Set of tokens
 	tokens = {
-		'IDENTIFIER', 'INTEGER', 'LOGICVALUE', *reserved_words
+		'IDENTIFIER', 'INTEGER', 'LOGICVALUE', 'LE', 'GE', 'AS', 'FL', *reserved_words
 	}
 
 	# Set of literals
 	literals = {
-		'~', '&', '|', '^', '+', '-', '*', '=', '#',
-		'<=', '<', '>=', '>', '(', ')', '[', ']', '{', '}',
-		'->', '.', ',', ';', ':=', ':', '\'', '!' , '↑', '/'
+		'~', '&', '|', '^', '+', '-', '*', '#', '<', '>', '(', ')', '[', ']',
+		'{', '}', '.', ',', ';', ':', '\'', '!' , '↑', '/'
 	}
 
 	# Ingone spaces and tabs
@@ -43,6 +42,11 @@ class LolaLexer(Lexer):
 		return t
 
 	# Rules for tokens
+	LE = r'<='
+	GE = r'>='
+	AS = r':='
+	FL = r'->'
+
 	@_(r'\d+')
 	def INTEGER(self, t):
 		t.value = int(t.value)
@@ -63,3 +67,19 @@ class LolaLexer(Lexer):
 	def error(self, value):
 		print('Line %d: Bad character %r' % (self.lineno, value[0]))
 		self.index += 1
+
+# Main - Temporal -
+if __name__ == '__main__':
+    data = '''
+{
+	>=
+	=
+	<=
+	:= \n
+	(* hola *)
+	BIT
+}
+'''
+    lexer = LolaLexer()
+    for tok in lexer.tokenize(data):
+        print(tok)
