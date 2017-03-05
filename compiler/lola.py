@@ -1,16 +1,17 @@
 # --------------------------------------------------------------
 # compiler: lola.py
 #
-# Compiler of lola lenguage
+# Compiler of lola language
 #
 # --------------------------------------------------------------
 
 # import modules
-import sys
 from lolalex import LolaLexer
+from lolaparse import LolaParser
 
 # MAIN
 if __name__ == '__main__':
+    import sys
     # Verify that the user enters one file
     if len(sys.argv) != 2:
         sys.stderr.write('Usage: %s filename\n' % sys.argv[0])
@@ -20,5 +21,8 @@ if __name__ == '__main__':
 
     # Create lexer
     lexer = LolaLexer()
-    for tok in lexer.tokenize(data):
-        sys.stdout.write('%s\n' % tok)
+    # Create parser
+    parser = LolaParser()
+
+    result = parser.parse(lexer.tokenize(data))
+    print(result)
