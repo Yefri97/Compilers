@@ -23,7 +23,7 @@ class CalcLexer(Lexer):
         'GE',
         'NE',
         *reserved_words,
-        }
+    }
 
     literals = { '(', ')', '{', '}', ';' }
 
