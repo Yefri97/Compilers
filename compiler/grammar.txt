@@ -1,3 +1,234 @@
-program : instruction program
-        | program
+program : statementSequence;
+
+statementSequence : statementSequence statement ";"
+                  | statement ";"
+                  ;
+
+statement : assignment
+          | unitAssignment
+          | ifStatement
+          | forStatement
+          ;
+
+assignment  : IDENTIFIER selector ":=" conditionOrEmpty expression;
+
+conditionOrEmpty  : condition "|"
+                  | empty
+                  ;
+
+condition : expression;
+
+SympleType  : BasicType
+            | IDENTIFIER
+            | IDENTIFIER"("ExpressionList")"
+            ;
+
+BasicType : "BIT"
+          | "TS"
+          | "OC"
+          ;
+
+ExpressionList  : expression"," ExpressionList
+                | expression
+                ;
+
+List  : [expression] List
+      | [expression]
+      ;
+
+type  : List SimpleType
+      | SimpleType
+      ;
+
+constDeclaration  : IDENTIFIER ":=" expression ";";
+
+constDeclarationList  : constDeclarationList constDeclaration
+                      | constDeclaration
+                      ;
+
+varDeclaration  : IdList ":" type ";";
+
+varDeclarationList  : varDeclarationList varDeclaration
+                    | varDeclaration
+                    ;
+
+IdList  : IDENTIFIER"," IdList
+        | IDENTIFIER
         ;
+
+selector  : "." IDENTIFIER
+          | "." INTEGER
+          | "[" expression "]"
+          | empty
+          ;
+
+selectorList  : selector selectorList
+              | selector
+              ;
+
+factor  : INTEGER
+        | LOGICVALUE
+        | IDENTIFIER selectorList
+        | "~" factor
+        | "↑" factor
+        | "(" expression ")"
+        | "MUX" "(" expression ":" expression "," expression ")"
+        | "MUX" "(" expression "," expression ":" expression "," expression ":" expression "," expression ")"
+        | "REG" "(" expression ")"
+        | "REG" "(" expression"," expression ")"
+        | "LATCH" "(" expression"," expression ")"
+        | "SR" "(" expression"," expression ")"
+        ;
+
+op1 : "*"
+    | "/"
+    | "DIV"
+    | "MOD"
+    ;
+
+term  : factor op1 term
+      | factor
+      ;
+
+op2 : "+"
+    | "-"
+    ;
+
+expression  : term op2 expression
+            | term
+            ;
+
+
+
+condition   : expression;
+
+op3 : "="
+    | "#"
+    | "<"
+    | "<="
+    | ">"
+    | ">="
+    ;
+
+relation  : expression op3 relation
+          | expression
+          ;
+
+elsifStatement  : "ELSIF" relation "THEN" StatementSequence;
+
+elsifStatementList  : elsifStatement elsifStatementList
+                    | elsifStatement
+                    ;
+
+elseStatement : "ELSE" StatementSequence;
+
+ifStatement : "IF" relation "THEN" StatementSequence
+              "END"
+            | "IF" relation "THEN" StatementSequence
+              elsifStatementList
+              "END"
+            | "IF" relation "THEN" StatementSequence
+              elseStatement
+              "END"
+            | "IF" relation "THEN" StatementSequence
+              elsifStatementList
+              elseStatement
+              "END"
+            ;
+
+forStatement  : "FOR" IDENTIFIER ":=" expression ".." expression "DO" StatementSequence "END";
+
+
+StatementSequence : statement";" StatementSequence
+                  | statement";"
+                  ;
+
+constDeclarationSection : "CONST" constDeclarationList
+                        | empty
+                        ;
+
+inDeclarationSection    : "IN" varDeclarationList
+                        | empty
+                        ;
+
+inoutDeclarationSection : "INOUT" varDeclarationList
+                        | empty
+                        ;
+
+outDeclarationSection   : "OUT" varDeclarationList
+                        | empty
+                        ;
+
+varDeclarationSection   : "VAR" varDeclarationList
+                        | empty
+                        ;
+
+beginDeclarationSection : "BEGIN" StatementSequence
+                        | empty
+                        ;
+
+module  : "MODULE" IDENTIFIER ";"
+          typeDeclarationList
+          constDeclarationSection
+          inDeclarationSection
+          inoutDeclarationSection
+          outDeclarationSection
+          varDeclarationSection
+          beginDeclarationSection
+          "END" IDENTIFIER "."
+        ;
+
+expressionEmpty : expression
+                | empty
+                ;
+
+parenList : parenList "[" expressionEmpty "]"
+          | empty
+          ;
+
+formalType  : parenList "BIT";
+
+formalTypeDeclaration : idList ":" formalType ";";
+
+formalTypeDeclarationList : formalTypeDeclarationList formalTypeDeclaration
+                          | empty
+                          ;
+
+formalBusType : parenList "TS"
+              | parenList "OC"
+              ;
+
+formalBusTypeDeclaration : idList ":" formalType ";";
+
+formalBusTypeDeclarationList : formalBusTypeDeclarationList formalBusTypeDeclaration
+                          | empty
+                          ;
+
+temp0 : "*"
+      | empty
+      ;
+
+temp1 : "(" idList ")"
+      | empty
+      ;
+
+inDeclarationType : "IN" formalTypeDeclarationList
+                  | empty
+                  ;
+
+
+
+typeDeclaration : "TYPE" IDENTIFIER temp0 temp1 ";"
+                  constDeclarationSection
+                  constDeclarationSection
+                  inDeclarationType
+                  inoutDeclarationType
+                  outDeclarationSection
+                  varDeclarationSection
+                  beginDeclarationSection
+                  "END" IDENTIFIER
+                ;
+
+typeDeclarationList : typeDeclarationList typeDeclaration ";"
+                    | empty
+                    ;
