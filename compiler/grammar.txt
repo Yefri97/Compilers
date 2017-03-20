@@ -1,26 +1,12 @@
 program : statementSequence;
 
-statementSequence : statementSequence statement ";"
-                  | statement ";"
-                  ;
 
-statement : assignment
-          | unitAssignment
-          | ifStatement
-          | forStatement
-          ;
 
-assignment  : IDENTIFIER selector ":=" conditionOrEmpty expression;
-
-conditionOrEmpty  : condition "|"
-                  | empty
-                  ;
-
-condition : expression;
-
-SympleType  : BasicType
-            | IDENTIFIER
-            | IDENTIFIER"("ExpressionList")"
+expressionListOrEmpty : "(" expressionList ")"
+                      | empty
+                      ;
+sympleType  : basicType
+            | IDENTIFIER expressionListOrEmpty
             ;
 
 BasicType : "BIT"
@@ -28,56 +14,45 @@ BasicType : "BIT"
           | "OC"
           ;
 
-ExpressionList  : expression"," ExpressionList
+expressionList  : expressionList "," expression
                 | expression
                 ;
 
-List  : [expression] List
-      | [expression]
-      ;
-
-type  : List SimpleType
-      | SimpleType
-      ;
+parenList : parenList "[" expression "]"
+          | empty
+          ;
+type  : parenList simpleType;
 
 constDeclaration  : IDENTIFIER ":=" expression ";";
 
-constDeclarationList  : constDeclarationList constDeclaration
-                      | constDeclaration
-                      ;
+varDeclaration  : idList ":" type ";";
 
-varDeclaration  : IdList ":" type ";";
-
-varDeclarationList  : varDeclarationList varDeclaration
-                    | varDeclaration
-                    ;
-
-IdList  : IDENTIFIER"," IdList
+idList  : idList "," IDENTIFIER
         | IDENTIFIER
         ;
+
+
 
 selector  : "." IDENTIFIER
           | "." INTEGER
           | "[" expression "]"
-          | empty
           ;
-
-selectorList  : selector selectorList
-              | selector
+selectorList  : selectorList selector
+              | empty
               ;
 
-factor  : INTEGER
+factor  : IDENTIFIER selectorList
         | LOGICVALUE
-        | IDENTIFIER selectorList
+        | INTEGER
         | "~" factor
         | "↑" factor
         | "(" expression ")"
         | "MUX" "(" expression ":" expression "," expression ")"
         | "MUX" "(" expression "," expression ":" expression "," expression ":" expression "," expression ")"
         | "REG" "(" expression ")"
-        | "REG" "(" expression"," expression ")"
-        | "LATCH" "(" expression"," expression ")"
-        | "SR" "(" expression"," expression ")"
+        | "REG" "(" expression "," expression ")"
+        | "LATCH" "(" expression "," expression ")"
+        | "SR" "(" expression "," expression ")"
         ;
 
 op1 : "*"
@@ -85,22 +60,23 @@ op1 : "*"
     | "DIV"
     | "MOD"
     ;
-
-term  : factor op1 term
+term  : term op1 factor
       | factor
       ;
 
 op2 : "+"
     | "-"
     ;
-
-expression  : term op2 expression
+expression  : expression op2 term
             | term
             ;
 
+conditionOrEmpty  : condition "|"
+                  | empty
+                  ;
+assignment  : IDENTIFIER selectorList ":=" conditionOrEmpty expression;
 
-
-condition   : expression;
+condition : expression;
 
 op3 : "="
     | "#"
@@ -109,126 +85,111 @@ op3 : "="
     | ">"
     | ">="
     ;
+relation  : expression op3 expression;
 
-relation  : expression op3 relation
-          | expression
-          ;
-
-elsifStatement  : "ELSIF" relation "THEN" StatementSequence;
-
-elsifStatementList  : elsifStatement elsifStatementList
-                    | elsifStatement
+elsifStatement  : "ELSIF" relation "THEN" statementSequence;
+elsifStatementList  : elsifStatementList elsifStatement
+                    | empty
                     ;
-
-elseStatement : "ELSE" StatementSequence;
-
-ifStatement : "IF" relation "THEN" StatementSequence
-              "END"
-            | "IF" relation "THEN" StatementSequence
+elseStatementOrEmpty  : "ELSE" statementSequence
+                      | empty
+                      ;
+ifStatement : "IF" relation "THEN" statementSequence
               elsifStatementList
-              "END"
-            | "IF" relation "THEN" StatementSequence
-              elseStatement
-              "END"
-            | "IF" relation "THEN" StatementSequence
-              elsifStatementList
-              elseStatement
+              elseStatementOrEmpty
               "END"
             ;
 
 forStatement  : "FOR" IDENTIFIER ":=" expression ".." expression "DO" StatementSequence "END";
 
+statement : assignment
+          | unitAssignment
+          | ifStatement
+          | forStatement
+          ;
 
-StatementSequence : statement";" StatementSequence
-                  | statement";"
+statementSequence : statementSequence ";" statement
+                  | statement
                   ;
 
-constDeclarationSection : "CONST" constDeclarationList
+
+
+typeDeclarationList     : typeDeclarationList typeDeclaration ";"
                         | empty
                         ;
-
-inDeclarationSection    : "IN" varDeclarationList
+constDeclarationList    : constDeclarationList constDeclaration
                         | empty
                         ;
-
-inoutDeclarationSection : "INOUT" varDeclarationList
+constDeclarationOrEmpty : "CONST" constDeclarationList
                         | empty
                         ;
-
-outDeclarationSection   : "OUT" varDeclarationList
+varDeclarationList      : varDeclarationList varDeclaration
                         | empty
                         ;
-
-varDeclarationSection   : "VAR" varDeclarationList
+inDeclarationOrEmpty    : "IN" varDeclarationList
                         | empty
                         ;
-
-beginDeclarationSection : "BEGIN" StatementSequence
+inoutDeclarationOrEmpty : "INOUT" varDeclarationList
                         | empty
                         ;
-
+outDeclarationOrEmpty   : "OUT" varDeclarationList
+                        | empty
+                        ;
+varDeclarationOrEmpty   : "VAR" varDeclarationList
+                        | empty
+                        ;
+beginDeclarationOrEmpty : "BEGIN" statementSequence
+                        | empty
+                        ;
 module  : "MODULE" IDENTIFIER ";"
           typeDeclarationList
-          constDeclarationSection
-          inDeclarationSection
-          inoutDeclarationSection
-          outDeclarationSection
-          varDeclarationSection
-          beginDeclarationSection
+          constDeclarationOrEmpty
+          inDeclarationOrEmpty
+          inoutDeclarationOrEmpty
+          outDeclarationOrEmpty
+          varDeclarationOrEmpty
+          beginDeclarationOrEmpty
           "END" IDENTIFIER "."
         ;
 
-expressionEmpty : expression
-                | empty
-                ;
-
-parenList : parenList "[" expressionEmpty "]"
-          | empty
-          ;
-
-formalType  : parenList "BIT";
-
-formalTypeDeclaration : idList ":" formalType ";";
-
-formalTypeDeclarationList : formalTypeDeclarationList formalTypeDeclaration
-                          | empty
-                          ;
-
-formalBusType : parenList "TS"
-              | parenList "OC"
-              ;
-
-formalBusTypeDeclaration : idList ":" formalType ";";
-
-formalBusTypeDeclarationList : formalBusTypeDeclarationList formalBusTypeDeclaration
-                          | empty
-                          ;
-
-temp0 : "*"
-      | empty
-      ;
-
-temp1 : "(" idList ")"
-      | empty
-      ;
-
-inDeclarationType : "IN" formalTypeDeclarationList
+expressionOrEmpty : expression
                   | empty
                   ;
+formalParenList   : formalParenList "[" expressionOrEmpty "]"
+                  | empty
+                  ;
+formalType        : formalParenList "BIT";
 
+formalBusType : formalParenList "TS"
+              | formalParenList "OC"
+              ;
 
-
-typeDeclaration : "TYPE" IDENTIFIER temp0 temp1 ";"
-                  constDeclarationSection
-                  constDeclarationSection
-                  inDeclarationType
-                  inoutDeclarationType
-                  outDeclarationSection
-                  varDeclarationSection
-                  beginDeclarationSection
+asteriskOrEmpty : "*"
+                | empty
+                ;
+idListOrEmpty   : "(" idList ")"
+                | empty
+                ;
+formalTypeList  : formalTypeList idList ":" formalType ";"
+                | empty
+                ;
+inFormalDeclarationOrEmpty  : "IN" formalTypeList
+                            | empty
+                            ;
+formalBusTypeList : formalBusTypeList idList ":" formalBusType ";"
+                  | empty
+                  ;
+inoutFormalDeclarationOrEmpty : "INOUT" formalBusTypeList
+                              | empty
+                              ;
+typeDeclaration : "TYPE" IDENTIFIER asteriskOrEmpty idListOrEmpty ";"
+                  constDeclarationOrEmpty
+                  inFormalDeclarationOrEmpty
+                  inoutFormalDeclarationOrEmpty
+                  outDeclarationOrEmpty
+                  varDeclarationOrEmpty
+                  beginDeclarationOrEmpty
                   "END" IDENTIFIER
                 ;
 
-typeDeclarationList : typeDeclarationList typeDeclaration ";"
-                    | empty
-                    ;
+unitAssignment  : IDENTIFIER selectorList "(" expressionList ")";
