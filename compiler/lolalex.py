@@ -20,7 +20,7 @@ class LolaLexer(Lexer):
 
 	# Set of tokens
 	tokens = {
-		'IDENTIFIER', 'INTEGER', 'LOGICVALUE', 'LE', 'GE', 'AS', 'FL', *reserved_words
+		'IDENTIFIER', 'INTEGER', 'LOGICVALUE', 'LE', 'GE', 'AS', 'FL', 'TP', *reserved_words
 	}
 
 	# Set of literals
