@@ -346,7 +346,7 @@ class LolaParser(Parser):
         pass
 
     # forStatement  : "FOR" IDENTIFIER ":=" expression ".." expression "DO" StatementSequence "END";
-    @_('FOR IDENTIFIER AS expression ".." expression DO StatementSequence END')
+    @_('FOR IDENTIFIER AS expression TP expression DO StatementSequence END')
     def forStatement(self, p):
         pass
 
