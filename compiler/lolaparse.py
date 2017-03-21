@@ -16,9 +16,6 @@ class LolaParser(Parser):
     tokens = LolaLexer.tokens
 
     # Grammar rules and actions
-    @_('INTEGER')
-    def expr(self, p):
-        return p.INTEGER
 
     # program : statementSequence;
     @_('statementSequence')
