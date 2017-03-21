@@ -325,9 +325,9 @@ class LolaParser(Parser):
     def elsifStatementList(self, p):
         pass
 
-    # elseStatementOrEmpty  : "ELSE" statementSequence
-    #                       | empty
-    #                       ;
+    # elseStatementOrEmpty : "ELSE" statementSequence
+    #                      | empty
+    #                      ;
     @_('ELSE statementSequence')
     def elseStatementOrEmpty(self, p):
         pass
