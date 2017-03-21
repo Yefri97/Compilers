@@ -1,15 +1,14 @@
 program : statementSequence;
 
-
-
 expressionListOrEmpty : "(" expressionList ")"
                       | empty
                       ;
+
 sympleType  : basicType
             | IDENTIFIER expressionListOrEmpty
             ;
 
-BasicType : "BIT"
+basicType : "BIT"
           | "TS"
           | "OC"
           ;
@@ -21,6 +20,7 @@ expressionList  : expressionList "," expression
 parenList : parenList "[" expression "]"
           | empty
           ;
+
 type  : parenList simpleType;
 
 constDeclaration  : IDENTIFIER ":=" expression ";";
@@ -31,12 +31,11 @@ idList  : idList "," IDENTIFIER
         | IDENTIFIER
         ;
 
-
-
 selector  : "." IDENTIFIER
           | "." INTEGER
           | "[" expression "]"
           ;
+
 selectorList  : selectorList selector
               | empty
               ;
@@ -60,6 +59,7 @@ op1 : "*"
     | "DIV"
     | "MOD"
     ;
+
 term  : term op1 factor
       | factor
       ;
@@ -67,6 +67,7 @@ term  : term op1 factor
 op2 : "+"
     | "-"
     ;
+
 expression  : expression op2 term
             | term
             ;
@@ -74,6 +75,7 @@ expression  : expression op2 term
 conditionOrEmpty  : condition "|"
                   | empty
                   ;
+
 assignment  : IDENTIFIER selectorList ":=" conditionOrEmpty expression;
 
 condition : expression;
@@ -85,15 +87,19 @@ op3 : "="
     | ">"
     | ">="
     ;
+
 relation  : expression op3 expression;
 
 elsifStatement  : "ELSIF" relation "THEN" statementSequence;
+
 elsifStatementList  : elsifStatementList elsifStatement
                     | empty
                     ;
+
 elseStatementOrEmpty  : "ELSE" statementSequence
                       | empty
                       ;
+
 ifStatement : "IF" relation "THEN" statementSequence
               elsifStatementList
               elseStatementOrEmpty
@@ -112,35 +118,42 @@ statementSequence : statementSequence ";" statement
                   | statement
                   ;
 
-
-
 typeDeclarationList     : typeDeclarationList typeDeclaration ";"
                         | empty
                         ;
+
 constDeclarationList    : constDeclarationList constDeclaration
                         | empty
                         ;
+
 constDeclarationOrEmpty : "CONST" constDeclarationList
                         | empty
                         ;
+
 varDeclarationList      : varDeclarationList varDeclaration
                         | empty
                         ;
+
 inDeclarationOrEmpty    : "IN" varDeclarationList
                         | empty
                         ;
+
 inoutDeclarationOrEmpty : "INOUT" varDeclarationList
                         | empty
                         ;
+
 outDeclarationOrEmpty   : "OUT" varDeclarationList
                         | empty
                         ;
+
 varDeclarationOrEmpty   : "VAR" varDeclarationList
                         | empty
                         ;
+
 beginDeclarationOrEmpty : "BEGIN" statementSequence
                         | empty
                         ;
+
 module  : "MODULE" IDENTIFIER ";"
           typeDeclarationList
           constDeclarationOrEmpty
@@ -155,10 +168,12 @@ module  : "MODULE" IDENTIFIER ";"
 expressionOrEmpty : expression
                   | empty
                   ;
+
 formalParenList   : formalParenList "[" expressionOrEmpty "]"
                   | empty
                   ;
-formalType        : formalParenList "BIT";
+
+formalType : formalParenList "BIT";
 
 formalBusType : formalParenList "TS"
               | formalParenList "OC"
@@ -167,21 +182,27 @@ formalBusType : formalParenList "TS"
 asteriskOrEmpty : "*"
                 | empty
                 ;
+
 idListOrEmpty   : "(" idList ")"
                 | empty
                 ;
+
 formalTypeList  : formalTypeList idList ":" formalType ";"
                 | empty
                 ;
+
 inFormalDeclarationOrEmpty  : "IN" formalTypeList
                             | empty
                             ;
+
 formalBusTypeList : formalBusTypeList idList ":" formalBusType ";"
                   | empty
                   ;
+
 inoutFormalDeclarationOrEmpty : "INOUT" formalBusTypeList
                               | empty
                               ;
+
 typeDeclaration : "TYPE" IDENTIFIER asteriskOrEmpty idListOrEmpty ";"
                   constDeclarationOrEmpty
                   inFormalDeclarationOrEmpty
