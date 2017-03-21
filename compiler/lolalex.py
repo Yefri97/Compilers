@@ -46,6 +46,7 @@ class LolaLexer(Lexer):
 	GE = r'>='
 	AS = r':='
 	FL = r'->'
+	TP = r'..'
 
 	@_(r'\d+')
 	def INTEGER(self, t):
