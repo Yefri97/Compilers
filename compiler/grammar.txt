@@ -1,10 +1,10 @@
-program : statementSequence;
+program : module;
 
 expressionListOrEmpty : "(" expressionList ")"
                       | empty
                       ;
 
-sympleType  : basicType
+simpleType  : basicType
             | IDENTIFIER expressionListOrEmpty
             ;
 
@@ -72,13 +72,7 @@ expression  : expression op2 term
             | term
             ;
 
-conditionOrEmpty  : condition "|"
-                  | empty
-                  ;
-
-assignment  : IDENTIFIER selectorList ":=" conditionOrEmpty expression;
-
-condition : expression;
+assignment  : IDENTIFIER selectorList ":=" expression;
 
 op3 : "="
     | "#"
@@ -106,7 +100,7 @@ ifStatement : "IF" relation "THEN" statementSequence
               "END"
             ;
 
-forStatement  : "FOR" IDENTIFIER ":=" expression ".." expression "DO" StatementSequence "END";
+forStatement  : "FOR" IDENTIFIER ":=" expression ".." expression "DO" statementSequence "END";
 
 statement : assignment
           | unitAssignment

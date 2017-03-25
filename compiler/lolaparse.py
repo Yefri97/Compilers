@@ -17,8 +17,8 @@ class LolaParser(Parser):
 
     # Grammar rules and actions
 
-    # program : statementSequence;
-    @_('statementSequence')
+    # program : module;
+    @_('module')
     def program(self, p):
         pass
 
@@ -31,15 +31,15 @@ class LolaParser(Parser):
     def expressionListOrEmpty(self, p):
         pass
 
-    # sympleType  : basicType
+    # simpleType  : basicType
     #             | IDENTIFIER expressionListOrEmpty
     #             ;
     @_('basicType')
-    def sympleType(self, p):
+    def simpleType(self, p):
         pass
 
     @_('IDENTIFIER expressionListOrEmpty')
-    def sympleType(self, p):
+    def simpleType(self, p):
         pass
 
     # basicType : "BIT"
@@ -248,26 +248,9 @@ class LolaParser(Parser):
     def expression(self, p):
         pass
 
-    # conditionOrEmpty  : condition "|"
-    #                   | empty
-    #                   ;
-    @_('condition "|"')
-    def conditionOrEmpty(self, p):
-        pass
-
-    @_('empty')
-    def conditionOrEmpty(self, p):
-        pass
-
-    # assignment  : IDENTIFIER selectorList ":=" conditionOrEmpty expression ;
-    # En el analizador lexico ya se habia definido como AS = r':='
-    @_('IDENTIFIER selectorList AS conditionOrEmpty expression')
+    # assignment  : IDENTIFIER selectorList ":=" expression ;
+    @_('IDENTIFIER selectorList AS expression')
     def assignment(self, p):
-        pass
-
-    # condition : expression ;
-    @_('expression')
-    def condition(self, p):
         pass
 
     # op3 : "="
@@ -345,8 +328,8 @@ class LolaParser(Parser):
     def ifStatement(self, p):
         pass
 
-    # forStatement  : "FOR" IDENTIFIER ":=" expression ".." expression "DO" StatementSequence "END";
-    @_('FOR IDENTIFIER AS expression TP expression DO StatementSequence END')
+    # forStatement  : "FOR" IDENTIFIER ":=" expression ".." expression "DO" statementSequence "END";
+    @_('FOR IDENTIFIER AS expression TP expression DO statementSequence END')
     def forStatement(self, p):
         pass
 
