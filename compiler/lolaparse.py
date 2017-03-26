@@ -22,7 +22,9 @@ class LolaParser(Parser):
     def program(self, p):
         pass
 
-    # expressionListOrEmpty : "(" expressionList ")" | empty ;
+    # expressionListOrEmpty : "(" expressionList ")"
+    #                       | empty
+    #                       ;
     @_(' "(" expressionList ")" ')
     def expressionListOrEmpty(self, p):
         pass
@@ -32,13 +34,13 @@ class LolaParser(Parser):
         pass
 
     # simpleType  : basicType
-    #             | IDENTIFIER expressionListOrEmpty
+    #             | id expressionListOrEmpty
     #             ;
     @_('basicType')
     def simpleType(self, p):
         pass
 
-    @_('IDENTIFIER expressionListOrEmpty')
+    @_('id expressionListOrEmpty')
     def simpleType(self, p):
         pass
 
@@ -76,17 +78,25 @@ class LolaParser(Parser):
     def parenList(self, p):
         pass
 
-    @_('empty')
+    @_('"[" expression "]"')
     def parenList(self, p):
         pass
 
+    @_('parenList')
+    def parenListOrEmpty(self, p):
+        pass
+
+    @_('empty')
+    def parenListOrEmpty(self, p):
+        pass
+
     # type  : parenList simpleType;
-    @_('parenList simpleType')
+    @_('parenListOrEmpty simpleType')
     def type(self, p):
         pass
 
-    # constDeclaration  : IDENTIFIER ":=" expression ";" ;
-    @_('IDENTIFIER AS expression ";"')
+    # constDeclaration  : id ":=" expression ";" ;
+    @_('id AS expression ";"')
     def constDeclaration(self, p):
         pass
 
@@ -95,26 +105,26 @@ class LolaParser(Parser):
     def varDeclaration(self, p):
         pass
 
-    # idList  : idList "," IDENTIFIER
-    #         | IDENTIFIER
+    # idList  : idList "," id
+    #         | id
     #         ;
-    @_('idList "," IDENTIFIER')
+    @_('idList "," id')
     def idList(self, p):
         pass
 
-    @_('IDENTIFIER')
+    @_('id')
     def idList(self, p):
         pass
 
-    # selector  : "." IDENTIFIER
-    #           | "." INTEGER
+    # selector  : "." id
+    #           | "." int
     #           | "[" expression "]"
     #           ;
-    @_('"." IDENTIFIER')
+    @_('"." id')
     def selector(self, p):
         pass
 
-    @_('"." INTEGER')
+    @_('"." int')
     def selector(self, p):
         pass
 
@@ -129,13 +139,21 @@ class LolaParser(Parser):
     def selectorList(self, p):
         pass
 
-    @_('empty')
+    @_('selector')
     def selectorList(self, p):
         pass
 
-    # factor  : IDENTIFIER selectorList
-    #         | LOGICVALUE
-    #         | INTEGER
+    @_('selectorList')
+    def selectorListOrEmpty(self, p):
+        pass
+
+    @_('empty')
+    def selectorListOrEmpty(self, p):
+        pass
+
+    # factor  : id selectorList
+    #         | boolean
+    #         | int
     #         | "~" factor
     #         | "↑" factor
     #         | "(" expression ")"
@@ -146,15 +164,15 @@ class LolaParser(Parser):
     #         | "LATCH" "(" expression "," expression ")"
     #         | "SR" "(" expression "," expression ")"
     #         ;
-    @_('IDENTIFIER selectorList')
+    @_('id selectorListOrEmpty')
     def factor(self, p):
         pass
 
-    @_('LOGICVALUE')
+    @_('boolean')
     def factor(self, p):
         pass
 
-    @_('INTEGER')
+    @_('int')
     def factor(self, p):
         pass
 
@@ -248,8 +266,8 @@ class LolaParser(Parser):
     def expression(self, p):
         pass
 
-    # assignment  : IDENTIFIER selectorList ":=" expression ;
-    @_('IDENTIFIER selectorList AS expression')
+    # assignment  : id selectorList ":=" expression ;
+    @_('id selectorListOrEmpty AS expression')
     def assignment(self, p):
         pass
 
@@ -304,8 +322,16 @@ class LolaParser(Parser):
     def elsifStatementList(self, p):
         pass
 
-    @_('empty')
+    @_('elsifStatement')
     def elsifStatementList(self, p):
+        pass
+
+    @_('elsifStatementList')
+    def elsifStatementListOrEmpty(self, p):
+        pass
+
+    @_('empty')
+    def elsifStatementListOrEmpty(self, p):
         pass
 
     # elseStatementOrEmpty : "ELSE" statementSequence
@@ -324,12 +350,12 @@ class LolaParser(Parser):
     #               elseStatementOrEmpty
     #               "END"
     #             ;
-    @_('IF relation THEN statementSequence elsifStatementList elseStatementOrEmpty END')
+    @_('IF relation THEN statementSequence elsifStatementListOrEmpty elseStatementOrEmpty END')
     def ifStatement(self, p):
         pass
 
-    # forStatement  : "FOR" IDENTIFIER ":=" expression ".." expression "DO" statementSequence "END";
-    @_('FOR IDENTIFIER AS expression TP expression DO statementSequence END')
+    # forStatement  : "FOR" id ":=" expression ".." expression "DO" statementSequence "END";
+    @_('FOR id AS expression TP expression DO statementSequence END')
     def forStatement(self, p):
         pass
 
@@ -372,8 +398,16 @@ class LolaParser(Parser):
     def typeDeclarationList(self, p):
         pass
 
-    @_('empty')
+    @_('typeDeclaration ";"')
     def typeDeclarationList(self, p):
+        pass
+
+    @_('typeDeclarationList')
+    def typeDeclarationListOrEmpty(self, p):
+        pass
+
+    @_('empty')
+    def typeDeclarationListOrEmpty(self, p):
         pass
 
     # constDeclarationList : constDeclarationList constDeclaration
@@ -383,14 +417,22 @@ class LolaParser(Parser):
     def constDeclarationList(self, p):
         pass
 
-    @_('empty')
+    @_('constDeclaration')
     def constDeclarationList(self, p):
+        pass
+
+    @_('constDeclarationList')
+    def constDeclarationListOrEmpty(self, p):
+        pass
+
+    @_('empty')
+    def constDeclarationListOrEmpty(self, p):
         pass
 
     # constDeclarationOrEmpty : "CONST" constDeclarationList
     #                         | empty
     #                         ;
-    @_('CONST constDeclarationList')
+    @_('CONST constDeclarationListOrEmpty')
     def constDeclarationOrEmpty(self, p):
         pass
 
@@ -405,14 +447,22 @@ class LolaParser(Parser):
     def varDeclarationList(self, p):
         pass
 
-    @_('empty')
+    @_('varDeclaration')
     def varDeclarationList(self, p):
+        pass
+
+    @_('varDeclarationList')
+    def varDeclarationListOrEmpty(self, p):
+        pass
+
+    @_('empty')
+    def varDeclarationListOrEmpty(self, p):
         pass
 
     # inDeclarationOrEmpty : "IN" varDeclarationList
     #                      | empty
     #                      ;
-    @_('IN varDeclarationList')
+    @_('IN varDeclarationListOrEmpty')
     def inDeclarationOrEmpty(self, p):
         pass
 
@@ -423,7 +473,7 @@ class LolaParser(Parser):
     # inoutDeclarationOrEmpty : "INOUT" varDeclarationList
     #                         | empty
     #                         ;
-    @_('INOUT varDeclarationList')
+    @_('INOUT varDeclarationListOrEmpty')
     def inoutDeclarationOrEmpty(self, p):
         pass
 
@@ -434,7 +484,7 @@ class LolaParser(Parser):
     # outDeclarationOrEmpty   : "OUT" varDeclarationList
     #                         | empty
     #                         ;
-    @_('OUT varDeclarationList')
+    @_('OUT varDeclarationListOrEmpty')
     def outDeclarationOrEmpty(self, p):
         pass
 
@@ -445,7 +495,7 @@ class LolaParser(Parser):
     # varDeclarationOrEmpty   : "VAR" varDeclarationList
     #                         | empty
     #                         ;
-    @_('VAR varDeclarationList')
+    @_('VAR varDeclarationListOrEmpty')
     def varDeclarationOrEmpty(self, p):
         pass
 
@@ -464,7 +514,7 @@ class LolaParser(Parser):
     def beginDeclarationOrEmpty(self, p):
         pass
 
-    # module  : "MODULE" IDENTIFIER ";"
+    # module  : "MODULE" id ";"
     #           typeDeclarationList
     #           constDeclarationOrEmpty
     #           inDeclarationOrEmpty
@@ -472,9 +522,9 @@ class LolaParser(Parser):
     #           outDeclarationOrEmpty
     #           varDeclarationOrEmpty
     #           beginDeclarationOrEmpty
-    #           "END" IDENTIFIER "."
+    #           "END" id "."
     #         ;
-    @_('MODULE IDENTIFIER ";" typeDeclarationList constDeclarationOrEmpty inDeclarationOrEmpty inoutDeclarationOrEmpty outDeclarationOrEmpty varDeclarationOrEmpty beginDeclarationOrEmpty END IDENTIFIER "." ')
+    @_('MODULE id ";" typeDeclarationListOrEmpty constDeclarationOrEmpty inDeclarationOrEmpty inoutDeclarationOrEmpty outDeclarationOrEmpty varDeclarationOrEmpty beginDeclarationOrEmpty END id "." ')
     def module(self, p):
         pass
 
@@ -496,23 +546,31 @@ class LolaParser(Parser):
     def formalParenList(self, p):
         pass
 
-    @_('empty')
+    @_('"[" expressionOrEmpty "]"')
     def formalParenList(self, p):
         pass
 
+    @_('formalParenList')
+    def formalParenListOrEmpty(self, p):
+        pass
+
+    @_('empty')
+    def formalParenListOrEmpty(self, p):
+        pass
+
     # formalType : formalParenList "BIT" ;
-    @_('formalParenList BIT')
+    @_('formalParenListOrEmpty BIT')
     def formalType(self, p):
         pass
 
     # formalBusType : formalParenList "TS"
     #               | formalParenList "OC"
     #               ;
-    @_('formalParenList TS')
+    @_('formalParenListOrEmpty TS')
     def formalBusType(self, p):
         pass
 
-    @_('formalParenList OC')
+    @_('formalParenListOrEmpty OC')
     def formalBusType(self, p):
         pass
 
@@ -545,14 +603,22 @@ class LolaParser(Parser):
     def formalTypeList(self, p):
         pass
 
-    @_('empty')
+    @_('idList ":" formalType ";"')
     def formalTypeList(self, p):
+        pass
+
+    @_('formalTypeList')
+    def formalTypeListOrEmpty(self, p):
+        pass
+
+    @_('empty')
+    def formalTypeListOrEmpty(self, p):
         pass
 
     # inFormalDeclarationOrEmpty  : "IN" formalTypeList
     #                             | empty
     #                             ;
-    @_('IN formalTypeList')
+    @_('IN formalTypeListOrEmpty')
     def inFormalDeclarationOrEmpty(self, p):
         pass
 
@@ -567,14 +633,22 @@ class LolaParser(Parser):
     def formalBusTypeList(self, p):
         pass
 
-    @_('empty')
+    @_('idList ":" formalBusType ";"')
     def formalBusTypeList(self, p):
+        pass
+
+    @_('formalBusTypeList')
+    def formalBusTypeListOrEmpty(self, p):
+        pass
+
+    @_('empty')
+    def formalBusTypeListOrEmpty(self, p):
         pass
 
     # inoutFormalDeclarationOrEmpty : "INOUT" formalBusTypeList
     #                               | empty
     #                               ;
-    @_('INOUT formalBusTypeList')
+    @_('INOUT formalBusTypeListOrEmpty')
     def inoutFormalDeclarationOrEmpty(self, p):
         pass
 
@@ -582,25 +656,40 @@ class LolaParser(Parser):
     def inoutFormalDeclarationOrEmpty(self, p):
         pass
 
-    # typeDeclaration : "TYPE" IDENTIFIER asteriskOrEmpty idListOrEmpty ";"
+    # typeDeclaration : "TYPE" id asteriskOrEmpty idListOrEmpty ";"
     #                   constDeclarationOrEmpty
     #                   inFormalDeclarationOrEmpty
     #                   inoutFormalDeclarationOrEmpty
     #                   outDeclarationOrEmpty
     #                   varDeclarationOrEmpty
     #                   beginDeclarationOrEmpty
-    #                   "END" IDENTIFIER
+    #                   "END" id
     #                 ;
-    @_('TYPE IDENTIFIER asteriskOrEmpty idListOrEmpty ";" constDeclarationOrEmpty inFormalDeclarationOrEmpty inoutFormalDeclarationOrEmpty outDeclarationOrEmpty varDeclarationOrEmpty beginDeclarationOrEmpty END IDENTIFIER')
+    @_('TYPE id asteriskOrEmpty idListOrEmpty ";" constDeclarationOrEmpty inFormalDeclarationOrEmpty inoutFormalDeclarationOrEmpty outDeclarationOrEmpty varDeclarationOrEmpty beginDeclarationOrEmpty END id')
     def typeDeclaration(self, p):
         pass
 
-    # unitAssignment  : IDENTIFIER selectorList "(" expressionList ")" ;
-    @_('IDENTIFIER selectorList "(" expressionList ")" ')
+    # unitAssignment  : id selectorList "(" expressionList ")" ;
+    @_('id selectorListOrEmpty "(" expressionList ")" ')
     def unitAssignment(self, p):
         pass
 
     # empty
     @_('')
     def empty(self, p):
+        pass
+
+    # identifier
+    @_('IDENTIFIER')
+    def id(self, p):
+        pass
+
+    # int
+    @_('INTEGER')
+    def int(self, p):
+        pass
+
+    # boolean
+    @_('LOGICVALUE')
+    def boolean(self, p):
         pass
