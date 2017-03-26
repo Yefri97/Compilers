@@ -48,7 +48,131 @@ def validate_fields(**fields):
 #
 # ----------------------------------------------------------------------
 
+class ExpressionList(AST):
+	_fields = ['list']
 
+class SimpleType(AST):
+	_fields = ['id', 'exprList']
+
+class BasicType(AST):
+	_fields = ['value']
+
+class ParenList(AST):
+	_fields = ['list']
+
+class Type(AST):
+	_fields = ['parenList', 'simpleType']
+
+class ConstDec(AST):
+	_fields = ['id', 'expr']
+
+class VarsDec(AST):
+	_fields = ['idList', 'type']
+
+class IdList(AST):
+	_fields = ['list']
+
+class Selector(AST):
+	_fields = ['type', 'select']
+
+class SelectorList(AST):
+	_fields = ['list']
+
+class Modifier(AST):
+	_fields = ['type', 'factor']
+
+class MUX(AST):
+	_fields = ['expr0', 'expr1', 'expr2']
+
+class Gate(AST):
+	_fields = ['expr0', 'expr1']
+
+class BinOp(AST):
+	_fields = ['op', 'left', 'right']
+
+class Assign(AST):
+	_fields = ['var', 'expr']
+
+class ElsIf(AST):
+	_fields = ['rel', 'branch']
+
+class ElsIfList(AST):
+	_fields = ['list']
+
+class Else(AST):
+	_fields = ['branch']
+
+class If(AST):
+	_fields = ['rel', 'branch', 'elsif', 'else']
+
+class For(AST):
+	_fields = ['id', 'expr0', 'expr1', 'branch']
+
+class TypeDecList(AST):
+	_fields = ['list']
+
+class ConstDecList(AST):
+	_fields = ['list']
+
+class VarDecList(AST):
+	_fields = ['list']
+
+class InDec(AST):
+	_fields = ['varDecList']
+
+class InoutDec(AST):
+	_fields = ['varDecList']
+
+class OutDec(AST):
+	_fields = ['varDecList']
+
+class VarDec(AST):
+	_fields = ['varDecList']
+
+class StatementSequence(AST):
+	_fields = ['list']
+
+class Module(AST):
+	_fields = ['id0', 'typeDec', 'constDec', 'inDec', 'inoutDec', 'outDec', 'varDec', 'body', 'id1']
+
+class Expr(AST):
+	_fields = ['expr']
+
+class FormalParenList(AST):
+	_fields = ['list']
+
+class FormalType(AST):
+	_fields = ['parenList', 'type']
+
+class FormalBusType(AST):
+	_fields = ['parenList', 'type']
+
+class FormalTypeList(AST):
+	_fields = ['list']
+
+class FormalBusTypeList(AST):
+	_fields = ['list']
+
+class TypeDec(AST):
+	_fields = ['id0', 'asterisk', 'idList', 'constDec', 'inDec', 'inoutDec', 'outDec', 'varDec', 'body', 'id1']
+
+class UnitAssign(AST):
+	_fields = ['var', 'exprList']
+
+class Empty(AST):
+	_fields = []
+
+class Var(AST):
+	_fields = ['id', 'selector']
+
+class Id(AST):
+	_fields = ['value']
+
+class Int(AST):
+	_fields = ['value']
+
+class Boolean(AST):
+	_fields = ['value']
 
 # Usted deberá añadir mas nodos aquí.  Algunos nodos sugeridos son
 # BinaryOperator, UnaryOperator, ConstDeclaration, VarDeclaration,
