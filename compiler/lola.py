@@ -25,4 +25,4 @@ if __name__ == '__main__':
     parser = LolaParser()
 
     result = parser.parse(lexer.tokenize(data))
-    print(result)
+    result.pprint()
