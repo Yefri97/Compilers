@@ -16,6 +16,7 @@ class LolaParser(Parser):
     # Get the token list from the lexer (required)
     tokens = LolaLexer.tokens
 
+    # debugfile = 'parser.out'
     # Grammar rules and actions
 
     # program : module;
@@ -96,6 +97,16 @@ class LolaParser(Parser):
     @_('id AS expression ";"')
     def constDeclaration(self, p):
         return ConstDec(p[0], p[2])
+
+    @_('id error expression ";"')
+    def constDeclaration(self, p):
+        lines = p.lineno
+        index = p.index
+        print ("Error! Asignacion Erronea en la linea:",lines, "Index:", index)
+
+    def error(self, p):
+        # self.errok()
+        self.tokens
 
     # varDeclaration  : idList ":" type ";" ;
     @_('idList ":" type ";"')
