@@ -65,6 +65,12 @@ class LolaParser(Parser):
         p0.append(p[2])
         return p0
 
+    @_('expressionList error expression')
+    def expressionList(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera ','")
+
+
     @_('expression')
     def expressionList(self, p):
         return [p[0]]
@@ -103,22 +109,22 @@ class LolaParser(Parser):
     @_('error AS expression ";"')
     def constDeclaration(self, p):
         lines = p.lineno
-        print ("Error! Linea",lines," Se espera el ID para asignar")
+        print (". Linea",lines," Se espera el ID para asignar")
 
     @_('id error expression ";"')
     def constDeclaration(self, p):
         lines = p.lineno
-        print ("Error! Linea",lines," Mala Asignacion ':=' CONST")
+        print (". Linea",lines," Se espera ':=' Error en asignacion.")
 
     @_('id AS error ";"')
     def constDeclaration(self, p):
         lines = p.lineno
-        print ("Error! Linea",lines," Mala expression")
+        print (". Linea",lines," Error en expresion")
 
     @_('id AS expression error')
     def constDeclaration(self, p):
         lines = p.lineno
-        print ("Error! Linea",lines," Se esperaba un ';' al declarar CONST")
+        print ("  Linea",lines," Se espera ';' al declarar CONST")
 
     # varDeclaration  : idList ":" type ";" ;
     @_('idList ":" type ";"')
@@ -128,22 +134,22 @@ class LolaParser(Parser):
     @_('error ":" type ";"')
     def varDeclaration(self, p):
         lines = p.lineno
-        print ("Error! Linea",lines," Variables erroneas")
+        print ("  Linea",lines," Variables erroneas")
 
     @_('idList error type ";"')
     def varDeclaration(self, p):
         lines = p.lineno
-        print ("Error! Linea",lines,"Se esperaba ':' al declarar TIPO DATO")
+        print ("  Linea",lines,"Se espera ':' al declarar TIPO DATO")
 
     @_('idList ":" error ";"')
     def varDeclaration(self, p):
         lines = p.lineno
-        print ("Error! Linea",lines," Tipo de dato malo")
+        print ("  Linea",lines," Tipo de dato malo")
 
     @_('idList ":" type error')
     def varDeclaration(self, p):
         lines = p.lineno
-        print ("Error! Linea",lines," Se espera ';'")
+        print ("  Linea",lines," Se espera ';'")
 
     # idList  : idList "," id
     #         | id
@@ -154,15 +160,18 @@ class LolaParser(Parser):
         p0.append(p[2])
         return p0
 
+    # , no
+
     @_('idList "," error')
     def idList(self, p):
         lines = p.lineno
-        print ("Error! Linea",lines," ID invalido")
+        print ("  Linea",lines," ID invalido")
 
     @_('id')
     def idList(self, p):
         return [p[0]]
 
+    # no
     # selector  : "." id
     #           | "." int
     #           | "[" expression "]"
@@ -221,6 +230,21 @@ class LolaParser(Parser):
     def factor(self, p):
         return MUX(p[2], p[4], p[6])
 
+    @_('MUX "(" expression error expression "," expression ")"')
+    def factor(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera ':' en MUX")
+
+    @_('MUX "(" expression ":" expression error expression ")"')
+    def factor(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera ',' en MUX")
+
+    @_('MUX "(" expression error expression "," expression error')
+    def factor(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera ')' en MUX")
+
     @_('REG', 'LATCH', 'SR')
     def gate(self, p):
         return p[0]
@@ -272,6 +296,11 @@ class LolaParser(Parser):
     def assignment(self, p):
         return Assign(p[0], p[2])
 
+    @_('var error expression')
+    def assignment(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera asignacion':='")
+
     # op3 : "="
     #     | "#"
     #     | "<"
@@ -283,6 +312,11 @@ class LolaParser(Parser):
     def op3(self, p):
         return p[0]
 
+    @_('error')
+    def op3(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera ';'")
+
     # relation  : expression op3 expression ;
     @_('expression op3 expression')
     def relation(self, p):
@@ -292,6 +326,11 @@ class LolaParser(Parser):
     @_('ELSIF relation THEN statementSequence')
     def elsifStatement(self, p):
         return ElsIf(p[1], p[3])
+
+    @_('ELSIF error THEN statementSequence')
+    def elsifStatement(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera relacion ELSEIF")
 
     # elsifStatementList  : elsifStatementList elsifStatement
     #                     | empty
@@ -334,10 +373,45 @@ class LolaParser(Parser):
     def ifStatement(self, p):
         return If(p[1], p[3], p[4], p[5])
 
+    @_('IF error THEN statementSequence elsifStatementListOrEmpty elseStatementOrEmpty END')
+    def ifStatement(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Error relacion IF")
+
+    @_('IF relation THEN error elsifStatementListOrEmpty elseStatementOrEmpty END')
+    def ifStatement(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Error relacion IF")
+
+    @_('IF relation THEN statementSequence error elseStatementOrEmpty END')
+    def ifStatement(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Error ELSE")
+
     # forStatement  : "FOR" id ":=" expression ".." expression "DO" statementSequence "END";
     @_('FOR id AS expression TP expression DO statementSequence END')
     def forStatement(self, p):
         return For(p[1], p[3], p[5], p[7])
+
+    @_('FOR error AS expression TP expression DO statementSequence END')
+    def forStatement(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera ID en FOR")
+
+    @_('FOR id error expression TP expression DO statementSequence END')
+    def forStatement(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Mala asignacion en el FOR")
+
+    @_('FOR id AS expression error expression DO statementSequence END')
+    def forStatement(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera '..' en el FOR")
+
+    @_('FOR id AS expression TP expression error statementSequence END')
+    def forStatement(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera 'DO' en el FOR")
 
     # statement : assignment
     #           | unitAssignment
@@ -357,6 +431,11 @@ class LolaParser(Parser):
         p0.append(p[2])
         return p0
 
+    @_('statementSequence error statement')
+    def statementSequence(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera ';'")
+
     @_('statement')
     def statementSequence(self, p):
         return [p[0]]
@@ -369,6 +448,11 @@ class LolaParser(Parser):
         p0 = p[0]
         p0.append(p[1])
         return p0
+
+    @_('typeDeclarationList typeDeclaration error')
+    def typeDeclarationList(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera ';'")
 
     @_('typeDeclaration ";"')
     def typeDeclarationList(self, p):
@@ -507,17 +591,17 @@ class LolaParser(Parser):
     @_('MODULE id error typeDeclarationListOrEmpty constDeclarationOrEmpty inDeclarationOrEmpty inoutDeclarationOrEmpty outDeclarationOrEmpty varDeclarationOrEmpty beginDeclarationOrEmpty END id "." ')
     def module(self, p):
         lines = p.lineno
-        print ("Error! Linea",lines,"Se espera un ';' al final de MODULE")
+        print ("Error fatal! Linea",lines,"Se espera un ';' al final de MODULE o ';'")
 
     @_('MODULE id ";" typeDeclarationListOrEmpty constDeclarationOrEmpty inDeclarationOrEmpty inoutDeclarationOrEmpty outDeclarationOrEmpty varDeclarationOrEmpty beginDeclarationOrEmpty END id error ')
     def module(self, p):
         lines = p.lineno
-        print ("Error! Linea",lines,"Se espera un '.' al finalizar programa")
+        print ("  Linea",lines,"Se espera '.' al finalizar programa")
 
     @_('MODULE id ";" typeDeclarationListOrEmpty constDeclarationOrEmpty inDeclarationOrEmpty inoutDeclarationOrEmpty outDeclarationOrEmpty varDeclarationOrEmpty beginDeclarationOrEmpty END error "." ')
     def module(self, p):
         lines = p.lineno
-        print ("Error! Linea",lines,"Finalice con el ID de MODULE")
+        print ("  Linea",lines,"Finalice con el ID de MODULE")
 
     # expressionOrEmpty : expression
     #                   | empty
@@ -598,6 +682,11 @@ class LolaParser(Parser):
     def formalTypeList(self, p):
         return VarsDec(IdList(p[0]), p[2])
 
+    @_('idList error formalType ";"')
+    def formalTypeList(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera ';'")
+
     @_('formalTypeList')
     def formalTypeListOrEmpty(self, p):
         return FormalTypeList(p[0])
@@ -625,6 +714,21 @@ class LolaParser(Parser):
         p0 = p[0]
         p0.append(VarsDec(IdList(p[1]), p[3]))
         return p0
+
+    @_('formalBusTypeList idList error formalBusType ";"')
+    def formalBusTypeList(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera ':'")
+
+    @_('formalBusTypeList idList ":" error ";"')
+    def formalBusTypeList(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Error Tipo")
+
+    @_('formalBusTypeList idList ":" formalBusType error')
+    def formalBusTypeList(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera ':'")
 
     @_('idList ":" formalBusType ";"')
     def formalBusTypeList(self, p):
@@ -662,6 +766,11 @@ class LolaParser(Parser):
     def typeDeclaration(self, p):
         return TypeDec(p[1], p[2], p[3], p[5], p[6], p[7], p[8], p[9], p[10], p[12])
 
+    @_('TYPE id asteriskOrEmpty idListOrEmpty error constDeclarationOrEmpty inFormalDeclarationOrEmpty inoutFormalDeclarationOrEmpty outDeclarationOrEmpty varDeclarationOrEmpty beginDeclarationOrEmpty END id')
+    def typeDeclaration(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera ';' en TYPE")
+
     # unitAssignment  : id selectorList "(" expressionList ")" ;
     @_('var "(" expressionList ")" ')
     def unitAssignment(self, p):
@@ -693,7 +802,7 @@ class LolaParser(Parser):
 
     def error(self, p):
     	if p:
-            #print('Syntax error at token', p.type)
+            print('Error de sintaxis antes de', p.type)
             #self.errok()
             self.tokens
     	else:
