@@ -13,9 +13,8 @@ from lolaAST import *
 # CLASS LolaParser
 class LolaParser(Parser):
 
-    # def __init__(self):
-    #     self.error = 0
-    # Get the token list from the lexer (required)
+    def __init__(self):
+        self.numerror = 0
     tokens = LolaLexer.tokens
 
     # debugfile = 'parser.out'
@@ -109,17 +108,17 @@ class LolaParser(Parser):
     @_('error AS expression ";"')
     def constDeclaration(self, p):
         lines = p.lineno
-        print (". Linea",lines," Se espera el ID para asignar")
+        print ("  Linea",lines," Se espera el ID para asignar")
 
     @_('id error expression ";"')
     def constDeclaration(self, p):
         lines = p.lineno
-        print (". Linea",lines," Se espera ':=' Error en asignacion.")
+        print ("  Linea",lines," Se espera ':=' Error en asignacion.")
 
     @_('id AS error ";"')
     def constDeclaration(self, p):
         lines = p.lineno
-        print (". Linea",lines," Error en expresion")
+        print ("  Linea",lines," Error en expresion")
 
     @_('id AS expression error')
     def constDeclaration(self, p):
@@ -396,7 +395,7 @@ class LolaParser(Parser):
     @_('FOR error AS expression TP expression DO statementSequence END')
     def forStatement(self, p):
         lines = p.lineno
-        print ("  Linea",lines,"Se espera ID en FOR")
+        print ("    Linea",lines,"Se espera ID en FOR")
 
     @_('FOR id error expression TP expression DO statementSequence END')
     def forStatement(self, p):
@@ -591,7 +590,7 @@ class LolaParser(Parser):
     @_('MODULE id error typeDeclarationListOrEmpty constDeclarationOrEmpty inDeclarationOrEmpty inoutDeclarationOrEmpty outDeclarationOrEmpty varDeclarationOrEmpty beginDeclarationOrEmpty END id "." ')
     def module(self, p):
         lines = p.lineno
-        print ("Error fatal! Linea",lines,"Se espera un ';' al final de MODULE o ';'")
+        print ("Error fatal!   Linea",lines,"Se espera un ';' al final de MODULE o ';'")
 
     @_('MODULE id ";" typeDeclarationListOrEmpty constDeclarationOrEmpty inDeclarationOrEmpty inoutDeclarationOrEmpty outDeclarationOrEmpty varDeclarationOrEmpty beginDeclarationOrEmpty END id error ')
     def module(self, p):
@@ -802,7 +801,9 @@ class LolaParser(Parser):
 
     def error(self, p):
     	if p:
-            print('Error de sintaxis antes de', p.type)
+            self.numerror = self.numerror + 1
+            print("Error",self.numerror)
+            print('  Error de sintaxis antes de', p.type)
             #self.errok()
             self.tokens
     	else:
