@@ -25,4 +25,7 @@ if __name__ == '__main__':
     parser = LolaParser()
 
     result = parser.parse(lexer.tokenize(data))
-    result.pprint()
+    if result:
+        result.pprint()
+    else:
+        print ("No arbol")
