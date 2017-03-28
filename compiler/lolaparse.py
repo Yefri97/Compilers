@@ -13,6 +13,8 @@ from lolaAST import *
 # CLASS LolaParser
 class LolaParser(Parser):
 
+    # def __init__(self):
+    #     self.error = 0
     # Get the token list from the lexer (required)
     tokens = LolaLexer.tokens
 
@@ -98,20 +100,50 @@ class LolaParser(Parser):
     def constDeclaration(self, p):
         return ConstDec(p[0], p[2])
 
+    @_('error AS expression ";"')
+    def constDeclaration(self, p):
+        lines = p.lineno
+        print ("Error! Linea",lines," Se espera el ID para asignar")
+
     @_('id error expression ";"')
     def constDeclaration(self, p):
         lines = p.lineno
-        index = p.index
-        print ("Error! Asignacion Erronea en la linea:",lines, "Index:", index)
+        print ("Error! Linea",lines," Mala Asignacion ':=' CONST")
 
-    def error(self, p):
-        # self.errok()
-        self.tokens
+    @_('id AS error ";"')
+    def constDeclaration(self, p):
+        lines = p.lineno
+        print ("Error! Linea",lines," Mala expression")
+
+    @_('id AS expression error')
+    def constDeclaration(self, p):
+        lines = p.lineno
+        print ("Error! Linea",lines," Se esperaba un ';' al declarar CONST")
 
     # varDeclaration  : idList ":" type ";" ;
     @_('idList ":" type ";"')
     def varDeclaration(self, p):
         return VarsDec(IdList(p[0]), p[2])
+
+    @_('error ":" type ";"')
+    def varDeclaration(self, p):
+        lines = p.lineno
+        print ("Error! Linea",lines," Variables erroneas")
+
+    @_('idList error type ";"')
+    def varDeclaration(self, p):
+        lines = p.lineno
+        print ("Error! Linea",lines,"Se esperaba ':' al declarar TIPO DATO")
+
+    @_('idList ":" error ";"')
+    def varDeclaration(self, p):
+        lines = p.lineno
+        print ("Error! Linea",lines," Tipo de dato malo")
+
+    @_('idList ":" type error')
+    def varDeclaration(self, p):
+        lines = p.lineno
+        print ("Error! Linea",lines," Se espera ';'")
 
     # idList  : idList "," id
     #         | id
@@ -121,6 +153,11 @@ class LolaParser(Parser):
         p0 = p[0]
         p0.append(p[2])
         return p0
+
+    @_('idList "," error')
+    def idList(self, p):
+        lines = p.lineno
+        print ("Error! Linea",lines," ID invalido")
 
     @_('id')
     def idList(self, p):
@@ -467,6 +504,21 @@ class LolaParser(Parser):
     def module(self, p):
         return Module(p[1], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[11])
 
+    @_('MODULE id error typeDeclarationListOrEmpty constDeclarationOrEmpty inDeclarationOrEmpty inoutDeclarationOrEmpty outDeclarationOrEmpty varDeclarationOrEmpty beginDeclarationOrEmpty END id "." ')
+    def module(self, p):
+        lines = p.lineno
+        print ("Error! Linea",lines,"Se espera un ';' al final de MODULE")
+
+    @_('MODULE id ";" typeDeclarationListOrEmpty constDeclarationOrEmpty inDeclarationOrEmpty inoutDeclarationOrEmpty outDeclarationOrEmpty varDeclarationOrEmpty beginDeclarationOrEmpty END id error ')
+    def module(self, p):
+        lines = p.lineno
+        print ("Error! Linea",lines,"Se espera un '.' al finalizar programa")
+
+    @_('MODULE id ";" typeDeclarationListOrEmpty constDeclarationOrEmpty inDeclarationOrEmpty inoutDeclarationOrEmpty outDeclarationOrEmpty varDeclarationOrEmpty beginDeclarationOrEmpty END error "." ')
+    def module(self, p):
+        lines = p.lineno
+        print ("Error! Linea",lines,"Finalice con el ID de MODULE")
+
     # expressionOrEmpty : expression
     #                   | empty
     #                   ;
@@ -638,3 +690,11 @@ class LolaParser(Parser):
     @_('LOGICVALUE')
     def boolean(self, p):
         return Boolean(p[0])
+
+    def error(self, p):
+    	if p:
+            #print('Syntax error at token', p.type)
+            #self.errok()
+            self.tokens
+    	else:
+            print("End of file!")
