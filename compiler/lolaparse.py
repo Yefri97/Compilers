@@ -207,8 +207,6 @@ class LolaParser(Parser):
     #         | "↑" factor
     #         | "(" expression ")"
     #         | "MUX" "(" expression ":" expression "," expression ")"
-    #         | "MUX" "(" expression "," expression ":" expression "," expression ":" expression "," expression ")"
-    #         | "REG" "(" expression ")"
     #         | "REG" "(" expression "," expression ")"
     #         | "LATCH" "(" expression "," expression ")"
     #         | "SR" "(" expression "," expression ")"
@@ -239,7 +237,7 @@ class LolaParser(Parser):
         lines = p.lineno
         print ("  Linea",lines,"Se espera ',' en MUX")
 
-    @_('MUX "(" expression error expression "," expression error')
+    @_('MUX "(" expression ":" expression "," expression error')
     def factor(self, p):
         lines = p.lineno
         print ("  Linea",lines,"Se espera ')' en MUX")
@@ -247,10 +245,35 @@ class LolaParser(Parser):
     @_('REG', 'LATCH', 'SR')
     def gate(self, p):
         return p[0]
-
+        
     @_('gate "(" expression "," expression ")"')
     def factor(self, p):
         return Gate(p[0], p[2], p[4])
+
+    @_('gate error expression "," expression ")"')
+    def factor(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera '('")
+
+    @_('gate "(" error "," expression ")"')
+    def factor(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera una expresion")
+
+    @_('gate "(" expression error expression ")"')
+    def factor(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera ','")
+
+    @_('gate "(" expression "," error ")"')
+    def factor(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera una expresion")
+
+    @_('gate "(" expression "," expression error')
+    def factor(self, p):
+        lines = p.lineno
+        print ("  Linea",lines,"Se espera ')'")
 
     # op1 : "*"
     #     | "/"
