@@ -85,7 +85,7 @@ class MUX(AST):
 	_fields = ['expr0', 'expr1', 'expr2']
 
 class Gate(AST):
-	_fields = ['expr0', 'expr1']
+	_fields = ['expr0', 'expr1', 'expr2']
 
 class BinOp(AST):
 	_fields = ['op', 'left', 'right']
