@@ -69,7 +69,6 @@ class LolaParser(Parser):
         lines = p.lineno
         print ("  Linea",lines,"Se espera ','")
 
-
     @_('expression')
     def expressionList(self, p):
         return [p[0]]
