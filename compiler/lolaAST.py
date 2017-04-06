@@ -221,7 +221,7 @@ class NodeVisitor(object):
 		else:
 			return None
 
-	def generic_visit(self,node):
+	def visit_children(self,node):
 		'''
 		Método ejecutado si no se encuentra médodo aplicable visit_.
 		Este examina el nodo para ver si tiene _fields, es una lista,
