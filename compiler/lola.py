@@ -8,6 +8,7 @@
 # import modules
 from lolalex import LolaLexer
 from lolaparse import LolaParser
+from lolaDOT import DotCode
 
 # MAIN
 if __name__ == '__main__':
@@ -23,9 +24,10 @@ if __name__ == '__main__':
     lexer = LolaLexer()
     # Create parser
     parser = LolaParser()
+    # Create class that draw the AST
+    dot = DotCode()
 
-    result = parser.parse(lexer.tokenize(data))
-    if result:
-        result.pprint()
-    else:
-        print ("No arbol")
+    root = parser.parse(lexer.tokenize(data))
+    dot.visit(root)
+
+    print(dot)
