@@ -8,6 +8,7 @@
 # import modules
 from lolalex import LolaLexer
 from lolaparse import LolaParser
+from lolacheck import CheckProgramVisitor as LolaCheck
 from lolaDOT import DotCode
 
 # MAIN
@@ -25,9 +26,11 @@ if __name__ == '__main__':
     # Create parser
     parser = LolaParser()
     # Create class that draw the AST
-    dot = DotCode()
+    #dot = DotCode()
+    check = LolaCheck()
 
     root = parser.parse(lexer.tokenize(data))
-    dot.visit(root)
+    check.visit(root)
+    #dot.visit(root)
 
-    print(dot)
+    #print(dot)

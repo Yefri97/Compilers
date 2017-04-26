@@ -35,15 +35,31 @@ class DotCode(NodeVisitor):
             self.dot.add_edge(pgv.Edge(self.stack[len(self.stack)-1], curr))
 
     def visit_Module(self, node):
-        curr = self.new_node(node, 'diamond', 'red', 'filled')
+        curr = self.new_node(node, 'box', 'blue', 'filled')
+        self.push_node(curr, node)
+
+    def visit_TypeDec(self, node):
+        curr = self.new_node(node, 'box', 'blue', 'filled')
+        self.push_node(curr, node)
+
+    def visit_ConstDec(self, node):
+        curr = self.new_node(node, 'circle', 'green', 'filled')
+        self.push_node(curr, node)
+
+    def visit_VarsDec(self, node):
+        curr = self.new_node(node, 'circle', 'green', 'filled')
         self.push_node(curr, node)
 
     def visit_Id(self, node):
-        curr = self.new_node(node, 'diamond', 'blue', 'filled', 'value={}'.format(node.value))
+        curr = self.new_node(node, 'box', 'lightgray', 'dash', 'value={}'.format(node.value))
         self.push_node(curr, node)
 
-    def visit_Int(self, node):
-        curr = self.new_node(node, 'circle', 'lightgreen', 'filled', 'value={}'.format(node.value))
+    def visit_For(self, node):
+        curr = self.new_node(node, 'circle', 'green', 'filled')
+        self.push_node(curr, node)
+
+    def visit_Var(self, node):
+        curr = self.new_node(node, 'diamond', 'red', 'filled')
         self.push_node(curr, node)
 
     def visit_Empty(self, node):
