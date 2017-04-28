@@ -19,7 +19,7 @@ class SymbolTable(object):
     pass
 
   def __init__(self, parent=None):
-        # Create a symbol table empty with the given parent table
+    # Create a symbol table empty with the given parent table
     self.symtab = {}
     self.parent = parent
     if self.parent != None:
@@ -27,7 +27,7 @@ class SymbolTable(object):
     self.children = []
 
   def add(self, a, v):
-        # Add a symbol with the value given to the symbol table
+    # Add a symbol with the value given to the symbol table
     if a in self.symtab:
       if self.symtab[a].type.get_string() != v.type.get_string():
         raise SymbolTable.SymbolConflictError()
@@ -36,7 +36,7 @@ class SymbolTable(object):
     self.symtab[a] = v
 
   def lookup(self, a):
-        # Find a symbol with the value given in the symbol table
+    # Find a symbol with the value given in the symbol table
     if a in self.symtab:
       return self.symtab[a]
     else:
@@ -83,7 +83,17 @@ class CheckProgramVisitor(NodeVisitor):
             if self.symtab.lookup(var.value):
                 print("Símbolo %s ya definido" % var.value)
             else:
+                var.type = self.symtab.lookup(node.type.simpleType)
                 self.symtab.add(var.value, var)
+
+    def visit_BinaryOp(self, node):
+		self.visit(node.left)
+		self.visit(node.right)
+		if node.left.type != node.right.type:
+			error
+		node.type = node.left.type
+		if not node.op in node.type.bin_ops:
+			error
 
     def visit_For(self, node):
         self.push_symtab()

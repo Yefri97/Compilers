@@ -53,7 +53,7 @@ class LolaParser(Parser):
     #           ;
     @_('BIT', 'TS', 'OC')
     def basicType(self, p):
-        return BasicType(p[0])
+        return p[0]
 
     # expressionList  : expressionList "," expression
     #                 | expression
@@ -244,7 +244,7 @@ class LolaParser(Parser):
     @_('REG', 'LATCH', 'SR')
     def gate(self, p):
         return p[0]
-        
+
     @_('gate "(" expression "," expression ")"')
     def factor(self, p):
         return Gate(p[0], p[2], p[4])
@@ -659,14 +659,14 @@ class LolaParser(Parser):
     # formalType : formalParenList "BIT" ;
     @_('formalParenListOrEmpty BIT')
     def formalType(self, p):
-        return FormalType(p[0], p[1])
+        return Type(p[0], p[1])
 
     # formalBusType : formalParenList "TS"
     #               | formalParenList "OC"
     #               ;
     @_('formalParenListOrEmpty TS', 'formalParenListOrEmpty OC')
     def formalBusType(self, p):
-        return FormalBusType(p[0], p[1])
+        return Type(p[0], p[1])
 
     # asteriskOrEmpty : "*"
     #                 | empty
