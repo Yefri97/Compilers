@@ -45,7 +45,7 @@ class LolaParser(Parser):
 
     @_('id expressionListOrEmpty')
     def simpleType(self, p):
-        return SimpleType(p[0], p[1])
+        return p[0].value
 
     # basicType : "BIT"
     #           | "TS"

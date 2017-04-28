@@ -18,13 +18,13 @@ class SymbolTable(object):
     # Symbol already defined and the type is different
     pass
 
-  def __init__(self, parent=None):
+  def __init__(self, name, parent):
     # Create a symbol table empty with the given parent table
     self.symtab = {}
     self.parent = parent
     if self.parent != None:
-      self.parent.children.append(self)
-    self.children = []
+      self.parent.children[name] = self;
+    self.children = {}
 
   def add(self, a, v):
     # Add a symbol with the value given to the symbol table
@@ -50,66 +50,78 @@ class CheckProgramVisitor(NodeVisitor):
 
     def __init__(self):
       # Init the symbol table
-        self.symtab = None
+        self.curr = None
 
-    def push_symtab(self):
-        self.symtab = SymbolTable(self.symtab)
+    def push_symtab(self, name):
+        self.curr = SymbolTable(name, self.curr)
 
     def pop_symtab(self):
-        self.symtab = self.symtab.parent
+        self.curr = self.curr.parent
 
     def visit_Module(self, node):
-        self.push_symtab()
+        if node.id0.value != node.id1.value:
+            print("Error en la declaración del modulo")
+
+        self.push_symtab('module')
 
         self.visit_children(node)
 
         self.pop_symtab()
 
     def visit_TypeDec(self, node):
-        self.push_symtab()
+        if node.id0.value != node.id1.value:
+            print("Error en la declaración del tipo")
+
+        self.push_symtab(node.id0.value)
 
         self.visit_children(node)
+
+        module = self.curr.parent
+        module.add(node.id0.value, self.curr)
 
         self.pop_symtab()
 
     def visit_ConstDec(self, node):
-        if self.symtab.lookup(node.id.value):
+        if self.curr.lookup(node.id.value):
             print("Símbolo %s ya definido" % node.id.value)
         else:
-            self.symtab.add(node.id.value, node.id)
+            self.curr.add(node.id.value, node.id)
 
     def visit_VarsDec(self, node):
         for var in node.idList.list:
-            if self.symtab.lookup(var.value):
+            if self.curr.lookup(var.value):
                 print("Símbolo %s ya definido" % var.value)
             else:
-                var.type = self.symtab.lookup(node.type.simpleType)
-                self.symtab.add(var.value, var)
+                var.type = self.curr.lookup(node.type.simpleType)
+                self.curr.add(var.value, var)
 
-    def visit_BinaryOp(self, node):
-		self.visit(node.left)
-		self.visit(node.right)
-		if node.left.type != node.right.type:
-			error
-		node.type = node.left.type
-		if not node.op in node.type.bin_ops:
-			error
-
-    def visit_For(self, node):
-        self.push_symtab()
-
-        if self.symtab.lookup(node.id.value):
-            print("Símbolo %s ya definido" % node.id.value)
-        else:
-            self.symtab.add(node.id.value, node.id)
-
-        self.visit_children(node)
-
-        self.pop_symtab()
-
-    def visit_Var(self, node):
-        if not self.symtab.lookup(node.id.value):
-            print("Variable %s asignado a un sym desconocido" % node.id.value)
+        if not self.curr.lookup(node.type.simpleType):
+            print("Tipo %s no declarado" % node.type.simpleType)
+    #
+    # def visit_BinaryOp(self, node):
+	# 	self.visit(node.left)
+	# 	self.visit(node.right)
+	# 	if node.left.type != node.right.type:
+	# 		error
+	# 	node.type = node.left.type
+	# 	if not node.op in node.type.bin_ops:
+	# 		error
+    #
+    # def visit_For(self, node):
+    #     self.push_symtab()
+    #
+    #     if self.symtab.lookup(node.id.value):
+    #         print("Símbolo %s ya definido" % node.id.value)
+    #     else:
+    #         self.symtab.add(node.id.value, node.id)
+    #
+    #     self.visit_children(node)
+    #
+    #     self.pop_symtab()
+    #
+    # def visit_Var(self, node):
+    #     if not self.symtab.lookup(node.id.value):
+    #         print("Variable %s asignado a un sym desconocido" % node.id.value)
 
     def generic_visit(self, node):
         self.visit_children(node)
