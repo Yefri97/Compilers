@@ -18,19 +18,39 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         sys.stderr.write('Usage: %s filename\n' % sys.argv[0])
         raise SystemExit(1)
+
     # Load file
     data = open(sys.argv[1]).read()
 
     # Create lexer
     lexer = LolaLexer()
-    # Create parser
+
+    # Create Parser
     parser = LolaParser()
+
     # Create class that draw the AST
-    #dot = DotCode()
-    check = LolaCheck()
+    dot = DotCode()
 
-    root = parser.parse(lexer.tokenize(data))
-    check.visit(root)
-    #dot.visit(root)
+    # Menu
+    print ("1. Analizador Léxico")
+    print ("2. Analizado Sintáctico")
+    print ("3. Generar código para árbol en Graphviz")
+    print ("4. Analizador Semántico")
 
-    #print(dot)
+    opcion = input()
+    if opcion == "1":
+        for tok in lexer.tokenize(data):
+            sys.stdout.write('%s\n' % tok)
+    elif opcion == "2":
+            result = parser.parse(lexer.tokenize(data))
+            if result:
+                result.pprint()
+            else:
+                print ("No arbol")
+    elif opcion == "3":
+                root = parser.parse(lexer.tokenize(data))
+                dot.visit(root)
+                print(dot)
+    elif opcion == "4":
+        check = LolaCheck()
+        check.visit(root)
