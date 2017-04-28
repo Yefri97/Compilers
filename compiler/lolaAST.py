@@ -287,7 +287,7 @@ def flatten(top):
 		def generic_visit(self,node):
 			self.nodes.append((self.depth,node))
 			self.depth += 1
-			NodeVisitor.generic_visit(self,node)
+			NodeVisitor.visit_children(self,node)
 			self.depth -= 1
 
 	d = Flattener()
