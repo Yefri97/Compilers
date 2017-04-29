@@ -34,8 +34,7 @@ if __name__ == '__main__':
     # Create class that check the program
     check = LolaCheck()
 
-    # root of the AST
-    root = parser.parse(lexer.tokenize(data))
+
 
     # Menu
     print ("1. Analizador Léxico")
@@ -48,13 +47,17 @@ if __name__ == '__main__':
         for tok in lexer.tokenize(data):
             sys.stdout.write('%s\n' % tok)
     elif opcion == "2":
-        result = parser.parse(lexer.tokenize(data))
-        if result:
-            result.pprint()
+        root = parser.parse(lexer.tokenize(data))
+        if root:
+            root.pprint()
         else:
             print ("No arbol")
     elif opcion == "3":
+        # root of the AST
+        root = parser.parse(lexer.tokenize(data))
         dot.visit(root)
         print(dot)
     elif opcion == "4":
+        # root of the AST
+        root = parser.parse(lexer.tokenize(data))
         check.visit(root)
