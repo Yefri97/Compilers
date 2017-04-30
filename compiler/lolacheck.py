@@ -92,6 +92,7 @@ class CheckProgramVisitor(NodeVisitor):
     def visit_ConstDec(self, node):
         if self.curr.lookup(node.id.value):
             print ("Linea",node.line,"Símbolo %s ya definido" % node.id.value)
+            exit()
         self.visit(node.expr)
         if node.expr.type.name != 'integer':
             print ("Linea",node.line,"Constante debe ser de tipo entero")
