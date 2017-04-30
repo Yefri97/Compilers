@@ -5,7 +5,6 @@
 #
 # --------------------------------------------------------------
 
-from sly import Parser
 from lolaAST import NodeVisitor
 import lolatype
 
@@ -77,13 +76,18 @@ class CheckProgramVisitor(NodeVisitor):
         if node.id0.value != node.id1.value:
             print ("Linea",node.line,"Error en la declaración del tipo")
 
-        self.push_symtab()
+        if self.curr.lookup(node.id0.value):
+            print ("Linea",node.line,"Tipo %s ya definido" % node.id0.value)
+        elif self.curr.lookup(node.id1.value):
+            print ("Linea",node.line,"Tipo %s ya definido" % node.id1.value)
+        else:
+            self.push_symtab()
 
-        self.visit_children(node)
-        module = self.curr.parent
-        module.add(node.id0.value, self.curr)
+            self.visit_children(node)
+            module = self.curr.parent
+            module.add(node.id0.value, self.curr)
 
-        self.pop_symtab()
+            self.pop_symtab()
 
     def visit_ConstDec(self, node):
         if self.curr.lookup(node.id.value):
