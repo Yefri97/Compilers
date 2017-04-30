@@ -102,7 +102,7 @@ class LolaParser(Parser):
     # constDeclaration  : id ":=" expression ";" ;
     @_('id AS expression ";"')
     def constDeclaration(self, p):
-        return ConstDec(p[0], p[2])
+        return ConstDec(p[0], p[2], p.lineno)
 
     @_('error AS expression ";"')
     def constDeclaration(self, p):
@@ -127,7 +127,7 @@ class LolaParser(Parser):
     # varDeclaration  : idList ":" type ";" ;
     @_('idList ":" type ";"')
     def varDeclaration(self, p):
-        return VarsDec(IdList(p[0]), p[2])
+        return VarsDec(IdList(p[0]), p[2], p.lineno)
 
     @_('error ":" type ";"')
     def varDeclaration(self, p):
@@ -315,7 +315,7 @@ class LolaParser(Parser):
     # assignment  : id selectorList ":=" expression ;
     @_('var AS expression')
     def assignment(self, p):
-        return Assign(p[0], p[2])
+        return Assign(p[0], p[2], p.lineno)
 
     @_('var error expression')
     def assignment(self, p):
@@ -412,7 +412,7 @@ class LolaParser(Parser):
     # forStatement  : "FOR" id ":=" expression ".." expression "DO" statementSequence "END";
     @_('FOR id AS expression TP expression DO statementSequence END')
     def forStatement(self, p):
-        return For(p[1], p[3], p[5], p[7])
+        return For(p[1], p[3], p[5], p[7], p.lineno)
 
     @_('FOR error AS expression TP expression DO statementSequence END')
     def forStatement(self, p):
@@ -607,7 +607,7 @@ class LolaParser(Parser):
     #         ;
     @_('MODULE id ";" typeDeclarationListOrEmpty constDeclarationOrEmpty inDeclarationOrEmpty inoutDeclarationOrEmpty outDeclarationOrEmpty varDeclarationOrEmpty beginDeclarationOrEmpty END id "." ')
     def module(self, p):
-        return Module(p[1], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[11])
+        return Module(p[1], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[11], p.lineno)
 
     @_('MODULE id error typeDeclarationListOrEmpty constDeclarationOrEmpty inDeclarationOrEmpty inoutDeclarationOrEmpty outDeclarationOrEmpty varDeclarationOrEmpty beginDeclarationOrEmpty END id "." ')
     def module(self, p):
@@ -696,12 +696,12 @@ class LolaParser(Parser):
     @_('formalTypeList idList ":" formalType ";"')
     def formalTypeList(self, p):
         p0 = p[0]
-        p0.append(VarsDec(IdList(p[1]), p[3]))
+        p0.append(VarsDec(IdList(p[1]), p[3], p.lineno))
         return p0
 
     @_('idList ":" formalType ";"')
     def formalTypeList(self, p):
-        return VarsDec(IdList(p[0]), p[2])
+        return VarsDec(IdList(p[0]), p[2], p.lineno)
 
     @_('idList error formalType ";"')
     def formalTypeList(self, p):
@@ -733,7 +733,7 @@ class LolaParser(Parser):
     @_('formalBusTypeList idList ":" formalBusType ";"')
     def formalBusTypeList(self, p):
         p0 = p[0]
-        p0.append(VarsDec(IdList(p[1]), p[3]))
+        p0.append(VarsDec(IdList(p[1]), p[3], p.lineno))
         return p0
 
     @_('formalBusTypeList idList error formalBusType ";"')
@@ -753,7 +753,7 @@ class LolaParser(Parser):
 
     @_('idList ":" formalBusType ";"')
     def formalBusTypeList(self, p):
-        return VarsDec(IdList(p[0]), p[2])
+        return VarsDec(IdList(p[0]), p[2], p.lineno)
 
     @_('formalBusTypeList')
     def formalBusTypeListOrEmpty(self, p):
@@ -785,7 +785,7 @@ class LolaParser(Parser):
     #                 ;
     @_('TYPE id asteriskOrEmpty idListOrEmpty ";" constDeclarationOrEmpty inFormalDeclarationOrEmpty inoutFormalDeclarationOrEmpty outDeclarationOrEmpty varDeclarationOrEmpty beginDeclarationOrEmpty END id')
     def typeDeclaration(self, p):
-        return TypeDec(p[1], p[2], p[3], p[5], p[6], p[7], p[8], p[9], p[10], p[12])
+        return TypeDec(p[1], p[2], p[3], p[5], p[6], p[7], p[8], p[9], p[10], p[12], p.lineno)
 
     @_('TYPE id asteriskOrEmpty idListOrEmpty error constDeclarationOrEmpty inFormalDeclarationOrEmpty inoutFormalDeclarationOrEmpty outDeclarationOrEmpty varDeclarationOrEmpty beginDeclarationOrEmpty END id')
     def typeDeclaration(self, p):

@@ -64,10 +64,10 @@ class Type(AST):
 	_fields = ['parenList', 'simpleType']
 
 class ConstDec(AST):
-	_fields = ['id', 'expr']
+	_fields = ['id', 'expr', 'line']
 
 class VarsDec(AST):
-	_fields = ['idList', 'type']
+	_fields = ['idList', 'type', 'line']
 
 class IdList(AST):
 	_fields = ['list']
@@ -91,7 +91,7 @@ class BinOp(AST):
 	_fields = ['op', 'left', 'right']
 
 class Assign(AST):
-	_fields = ['var', 'expr']
+	_fields = ['var', 'expr', 'line']
 
 class ElsIf(AST):
 	_fields = ['rel', 'branch']
@@ -106,7 +106,7 @@ class If(AST):
 	_fields = ['rel', 'branch', 'elsif', 'else']
 
 class For(AST):
-	_fields = ['id', 'expr0', 'expr1', 'branch']
+	_fields = ['id', 'expr0', 'expr1', 'branch', 'line']
 
 class TypeDecList(AST):
 	_fields = ['list']
@@ -133,7 +133,7 @@ class StatementSequence(AST):
 	_fields = ['list']
 
 class Module(AST):
-	_fields = ['id0', 'typeDec', 'constDec', 'inDec', 'inoutDec', 'outDec', 'varDec', 'body', 'id1']
+	_fields = ['id0', 'typeDec', 'constDec', 'inDec', 'inoutDec', 'outDec', 'varDec', 'body', 'id1', 'line']
 
 class Expr(AST):
 	_fields = ['expr']
@@ -154,7 +154,7 @@ class FormalBusTypeList(AST):
 	_fields = ['list']
 
 class TypeDec(AST):
-	_fields = ['id0', 'asterisk', 'idList', 'constDec', 'inDec', 'inoutDec', 'outDec', 'varDec', 'body', 'id1']
+	_fields = ['id0', 'asterisk', 'idList', 'constDec', 'inDec', 'inoutDec', 'outDec', 'varDec', 'body', 'id1', 'line']
 
 class UnitAssign(AST):
 	_fields = ['var', 'exprList']

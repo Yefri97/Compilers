@@ -5,6 +5,7 @@
 #
 # --------------------------------------------------------------
 
+from sly import Parser
 from lolaAST import NodeVisitor
 import lolatype
 
@@ -61,7 +62,7 @@ class CheckProgramVisitor(NodeVisitor):
 
     def visit_Module(self, node):
         if node.id0.value != node.id1.value:
-            print("Error en la declaración del modulo")
+            print ("Linea",node.line,"Error en la declaración del modulo")
 
         self.push_symtab()
 
@@ -74,12 +75,11 @@ class CheckProgramVisitor(NodeVisitor):
 
     def visit_TypeDec(self, node):
         if node.id0.value != node.id1.value:
-            print("Error en la declaración del tipo")
+            print ("Linea",node.line,"Error en la declaración del tipo")
 
         self.push_symtab()
 
         self.visit_children(node)
-
         module = self.curr.parent
         module.add(node.id0.value, self.curr)
 
@@ -87,10 +87,10 @@ class CheckProgramVisitor(NodeVisitor):
 
     def visit_ConstDec(self, node):
         if self.curr.lookup(node.id.value):
-            print("Símbolo %s ya definido" % node.id.value)
+            print ("Linea",node.line,"Símbolo %s ya definido" % node.id.value)
         self.visit(node.expr)
         if node.expr.type.name != 'integer':
-            print("Constante debe ser de tipo entero")
+            print ("Linea",node.line,"Constante debe ser de tipo entero")
         node.id.type = self.curr.lookup('integer')
         self.curr.add(node.id.value, node.id)
 
@@ -98,7 +98,7 @@ class CheckProgramVisitor(NodeVisitor):
         typeName = node.type.simpleType
         for var in node.idList.list:
             if self.curr.lookup(var.value):
-                print("Símbolo %s ya definido" % var.value)
+                print ("Linea",node.line,"Símbolo %s ya definido" % var.value)
             elif typeName == 'BIT' or typeName == 'TS' or typeName == 'OC':
                 var.type = self.curr.lookup('logicvalue')
                 self.curr.add(var.value, var)
@@ -138,7 +138,7 @@ class CheckProgramVisitor(NodeVisitor):
         self.visit_children(node)
 
         if self.curr.lookup(node.id.value):
-            print("Símbolo %s ya definido" % node.id.value)
+            print("Linea",node.line,"Símbolo %s ya definido" % node.id.value)
         else:
             node.id.type = self.curr.lookup('integer')
             self.curr.add(node.id.value, node.id)
@@ -146,7 +146,7 @@ class CheckProgramVisitor(NodeVisitor):
         self.visit(node.expr0)
         self.visit(node.expr1)
         if node.expr0.type.name != 'integer' or node.expr1.type.name != 'integer':
-            print("Error en el FOR: Limites deben ser de tipo entero")
+            print("Linea",node.line,"Error en el FOR: Limites deben ser de tipo entero")
 
         self.pop_symtab()
 
@@ -155,7 +155,7 @@ class CheckProgramVisitor(NodeVisitor):
         self.visit(node.expr)
         if isinstance(node.var.type, lolatype.LolaType) and isinstance(node.expr.type, lolatype.LolaType):
             if node.var.type.name != node.expr.type.name:
-                print("Error en la asignación")
+                print("Linea",node.line,"Error en la asignación")
 
     def generic_visit(self, node):
         self.visit_children(node)
