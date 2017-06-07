@@ -446,18 +446,18 @@ class LolaParser(Parser):
     # statementSequence : statementSequence ";" statement
     #                   | statement
     #                   ;
-    @_('statementSequence ";" statement')
+    @_('statementSequence statement ";"')
     def statementSequence(self, p):
         p0 = p[0]
-        p0.append(p[2])
+        p0.append(p[1])
         return p0
 
-    @_('statementSequence error statement')
+    @_('statementSequence statement error')
     def statementSequence(self, p):
         lines = p.lineno
         print ("  Linea",lines,"Se espera ';'")
 
-    @_('statement')
+    @_('statement ";"')
     def statementSequence(self, p):
         return [p[0]]
 
